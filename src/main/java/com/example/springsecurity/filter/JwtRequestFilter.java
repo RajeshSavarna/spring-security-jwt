@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,12 +40,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         	userName = jwtUtils.extractUserName(jwt);
         } 
 
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (userName != null/* && SecurityContextHolder.getContext().getAuthentication() == null */) {
         	UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
-        	if (jwtUtils.validateToken(jwt, userDetails)) {
+//        	if (jwtUtils.validateToken(jwt, userDetails)) {
+        	if (!jwtUtils.isTokenExpired(jwt)) {
         		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new 
         				UsernamePasswordAuthenticationToken(userDetails, null, new ArrayList<>());
-        		usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//        		usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         	}
         }

@@ -21,15 +21,15 @@ public class JwtUtils {
 		return Jwts.builder().setClaims(claims)
 				.setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 100 * 60 * 60 * 10))
+				.setExpiration(new Date(System.currentTimeMillis() + 3600000 /*100 * 60 * 60 * 10*/))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
 	
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		final String username = extractUserName(token);
-		return(username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-	}
+//	public Boolean validateToken(String token, UserDetails userDetails) {
+//		final String username = extractUserName(token);
+//		return(username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//	}
 	
 	
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -44,7 +44,7 @@ public class JwtUtils {
 		return extractClaim(token, Claims::getSubject);
 	}
 	
-	private Boolean isTokenExpired(String token) {
+	public Boolean isTokenExpired(String token) {
 		return extractClaim(token, Claims::getExpiration).before(new Date());
 	}
 
